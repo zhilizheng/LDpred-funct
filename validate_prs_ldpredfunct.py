@@ -451,8 +451,11 @@ def parse_phen_file(pf, pf_format):
                 for line in f:
                     l = line.split()
                     iid = l[0]
-                    phen = float(l[1])
-                    phen_map[iid] = {'phen':phen}
+                    if l[1] == "NA" or l[1] == "." or l[1] == "na":
+                        print("skip one sample: ", iid)
+                    else:
+                        phen = float(l[1])
+                        phen_map[iid] = {'phen':phen}
             iids = set(phen_map.keys())
 
 
