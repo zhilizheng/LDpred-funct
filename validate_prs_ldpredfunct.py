@@ -638,17 +638,12 @@ def calc_risk_scores(bimfile_name, rs_id_map, phen_map, K_bins=1,out_file=None,v
     num_individs = len(phen_map)
     assert num_individs > 0, 'No individuals found.  Problems parsing the phenotype file?'
     #print K_bins
-    if K_bins>1:
-        prs_dict_bins={}
-        bk = 1
-        while bk <= K_bins:
-            prs_dict_bins["pval_derived_effects_prs_bin_%d"%bk]=sp.zeros(num_individs)
-            bk+=1
-
+    prs_dict_bins={}
     #print prs_dict_bins.keys()
     if bimfile_name is not None:
         raw_effects_prs = sp.zeros(num_individs)
         pval_derived_effects_prs = sp.zeros(num_individs)
+        bInit = False
 
         bimf1 = re.sub(r"\[1:22\]", "[0-9]", bimfile_name)
         bimf2 = re.sub(r"\[1:22\]", "[0-2][0-9]", bimfile_name)
@@ -659,6 +654,16 @@ def calc_risk_scores(bimfile_name, rs_id_map, phen_map, K_bins=1,out_file=None,v
             genotype_file = re.sub(r".bim", "", bimfile)
             print 'Get PRS on file %s' % bimfile
             prs_dict = get_prs_bins(genotype_file, rs_id_map, phen_map=phen_map,K_bins=K_bins,verbose=verbose)
+            if not bInit:
+                num_individs = prs_dict['raw_effects_prs'].size
+                raw_effects_prs = sp.zeros(num_individs)
+                pval_derived_effects_prs = sp.zeros(num_individs)
+                if K_bins>1:
+                    bk = 1
+                    while bk <= K_bins:
+                        prs_dict_bins["pval_derived_effects_prs_bin_%d"%bk]=sp.zeros(num_individs)
+                        bk+=1
+                bInit = True
 
             raw_effects_prs += prs_dict['raw_effects_prs']
             pval_derived_effects_prs += prs_dict['pval_derived_effects_prs']
