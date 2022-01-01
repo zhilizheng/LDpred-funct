@@ -222,16 +222,23 @@ def parse_sum_stats_standard_ldscore(filename=None,
     chrom_dict = {}
 
     funct_dict = {}
+    total_funct = 0
+    total_funct_pos = 0
+    num_lines = 0
     if FUNCT_separate:
         print 'Parsing the SNP-Heritability file: %s' % FUNCT_FILE
         with open(FUNCT_FILE) as f:
             print f.next()
             for line in f:
+                num_lines = num_lines + 1
                 l = (line.strip()).split()
                 if float(l[1]) > 0:
+                    total_funct_pos = total_funct_pos + 1
                     if l[0] in valid_sids:
                         l = (line.strip()).split()
                         funct_dict[l[0]] = float(l[1])
+                        total_funct = total_funct + 1
+        print 'Total %d SNPs in the SNP-Heritability file, %d positive, %d valid.' % (num_lines, total_funct_pos, total_funct)
 
 
     if FUNCT_separate:
